@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Кто хочет стать Java-программистом</title>
+    <meta charset="UTF-8">
+
+    <link rel="stylesheet" type="text/css" href="styles/main.css">
+    <script src="scripts/main.js"></script>
+
+    <style>
+
+		body {
+			background-color: #1d1d1d;
+			color: #fff;
+			font-family: Arial, sans-serif;
+			font-size: 18px;
+			line-height: 1.5;
+			margin: 0;
+			padding: 0;
+		}
+		.container {
+			max-width: 800px;
+			margin: 0 auto;
+			padding: 20px;
+		}
+		h1 {
+			font-size: 36px;
+			font-weight: bold;
+			text-align: center;
+			margin-bottom: 40px;
+		}
+		.question {
+			font-weight: bold;
+			font-size: 24px;
+			margin-bottom: 20px;
+		}
+
+		.footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            text-align: center; /* выравнивание текста по центру */
+        }
+
+		.full-screen-image {
+			width: 100%;
+			height: 100%;
+			position: fixed;
+			top: 0;
+			left: 0;
+			z-index: -1;
+		}
+		button {
+            display: block; /* превращает кнопку в блочный элемент, занимающий всю ширину */
+            margin: 0 auto; /* автоматически центрирует кнопку по горизонтали */
+            padding: 20px; /* добавляет отступ вокруг текста кнопки */
+            font-size: 24px; /* устанавливает размер шрифта */
+            background-color: blue; /* задает цвет фона кнопки */
+            color: white; /* задает цвет текста */
+            border: none; /* убирает границу кнопки */
+            border-radius: 10px; /* добавляет закругление углов кнопки */
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: darkblue;
+        }
+        button:active {
+            transform: translateY(2px);
+            background-color: blue;
+        }
+
+        #question {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            border: 1px solid #000;
+            padding: 20px;
+            width: 400px;
+            height: 300px;
+        }
+
+        #question table {
+            width: 100%;
+            height: 100%;
+        }
+
+        #question td {
+            font-size: 20px;
+            text-align: center;
+            padding: 10px;
+        }
+
+        #question td:first-child {
+            font-weight: bold;
+            font-size: 24px;
+        }
+
+        #question td:not(:first-child) {
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #prev, #answer, #next {
+                    background-color: red;
+                    color: white;
+                    font-size: 16px;
+                    padding: 10px;
+                    border: none;
+                    border-radius: 5px;
+                    margin: 1px;
+                    cursor: pointer;
+                    visibility: visible;
+                    width: 120px;
+                    height: 55px;
+<!--                    position: absolute;-->
+<!--                    bottom: -200px;-->
+                }
+
+
+#answer {
+  display: none;
+  position: absolute;
+  bottom: -570px;
+  left: 43%;
+  margin: 0 auto; /* автоматически центрирует кнопку по горизонтали */
+}
+
+    </style>
+
+</head>
+<!--<body onload="game()">-->
+<body>
+
+<!--<audio id="audio" src="music.ogg" controls preload="auto" type="audio/ogg"></audio>-->
+<audio id="audio" src="https://zvukipro.com/uploads/files/2019-03/1551975439_friend-clock-2008.mp3" preload="auto" autoplay></audio>
+<audio id="click1" src="kurudum.mp3" preload="auto" autoplay></audio>
+<audio id="click2" src="tududum.mp3" preload="auto" autoplay></audio>
+<audio id="end" src="https://zvukipro.com/uploads/files/2019-03/1551978635_khsm_phone_end.mp3" preload="auto" autoplay></audio>
+<!--<audio src="music.mp3" autoplay="autoplay"></audio>-->
+
+<img class="full-screen-image" src="image.jpg">
+<div class="container">
+    <h1>Кто хочет стать Java-программистом</h1>
+
+
+
+    <button id="game-button" onclick="game()">ИГРАТЬ</button>
+
+<!--        Модальное окно.-->
+        <div id="question-modal" style="display:none; border:2px solid white; background-color: blue; width: 50%; height: 50%; position: absolute; top: 25%; left: 25%; margin: auto;">
+            <div id="inner-div" style="text-align: left; position: relative; padding: 20px;">
+
+                <p style="font-size: 24px; margin: 10px;">
+
+                </p>
+            </div>
+        </div>
+
+
+    <div style="position: relative;">
+        <button id="prev" style="display: none; position: absolute; bottom: -570px; left: 0;"><< НАЗАД</button>
+<!--        <button id="answer" style="display: none; position: absolute; bottom: -550px; left: 50%;"><< ОТВЕТ >></button>-->
+        <button id="answer"><< ОТВЕТ >></button>
+        <button id="next" style="display: none; position: absolute; bottom: -570px; right: 0;">ДАЛЬШЕ >></button>
+    </div>
+
+    <script>
+
+    var audio = document.getElementById('audio');
+    var click1 = document.getElementById('click1');
+    var click2 = document.getElementById('click2');
+    var end = document.getElementById('end');
+
+
+    //audio.volume = .25;
+    function game() {
+        end.pause();
+        end.currentTime = 0;
+        audio.play();
+
+        var button = document.getElementById("game-button");
+        var modal = document.getElementById("question-modal");
+        var prevButton = document.getElementById("prev");
+        var answerButton = document.getElementById("answer");
+        var nextButton = document.getElementById("next");
+
+        if (button.innerHTML == "ИГРАТЬ") {
+            modal.style.display = "block";
+            prevButton.style.display = "block";
+            answerButton.style.display = "block";
+            nextButton.style.display = "block";
+            button.innerHTML = "СТОП";
+        } else {
+            stopGame();
+        }
+    }
+
+    function stopGame() {
+
+        audio.pause();
+        audio.currentTime = 0;
+        end.play();
+
+        var button = document.getElementById("game-button");
+        var modal = document.getElementById("question-modal");
+        var prevButton = document.getElementById("prev");
+        var answerButton = document.getElementById("answer");
+        var nextButton = document.getElementById("next");
+
+        modal.style.display = "none";
+        prevButton.style.display = "none";
+        answerButton.style.display = "none";
+        nextButton.style.display = "none";
+        button.innerHTML = "ИГРАТЬ";
+    }
+
+        const prevBtn = document.getElementById('prev');
+        const answerBtn = document.getElementById('answer');
+        const nextBtn = document.getElementById('next');
+
+
+
+<!-- Обработчики кнопок!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-->
+
+//Функция Для запроса вопроса.
+function questionRequest(){
+click2.play();
+ <!--    audio.play();-->
+ <!-- Запрос вопроса на сервер, при нажатии на кнопку Играть или Вопрос-->
+<!--console.log("Запрос отправлен на сервер!")-->
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      console.log(this.responseText)
+      document.getElementById("inner-div").innerHTML = this.responseText;
+
+      const element = document.getElementById("inner-div"); //Форматируем вопрос
+      element.style.textAlign = "center"; //Выравниваем по центру
+    }
+  };
+  xhttp.open("GET", "/getQuestion", true);
+  xhttp.send();
+}
+
+    // Обработчик кнопки Играть.
+    document.getElementById("game-button").addEventListener("click", function() {
+        questionRequest();
+});
+
+let sw=0;
+
+//Функция Для запроса ответа.
+function answerRequest(){
+click1.play();
+<!-- Запрос ответа на сервер при нажатии на кнопку Ответ-->
+    var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      console.log(this.responseText)
+
+      const textFromDatabase = this.responseText; //Получаем текст, чтобы перед вставкой сначала отформатировать его.
+      const formattedText = textFromDatabase.replace(/(\.\s+)([A-ZА-Я])/g, "$1<br/>$2") //Точка, пробел и любая заглавная буква - Затем перенос строки.
+      .replace(/(\-\s+)([A-ZА-Я])/g, "<br/>$1$2") //Тире, пробел и любая заглавная буква - Затем перенос строки.
+      .replace(/([\d() ])/g, "$1\n") //Любая цифра, скобка и пробел - Затем перенос строки. Кажется Не работает.
+      .replace(/\* /g, "<br/>* "); //Звездочка, пробел - Затем перенос строки.
+      document.getElementById("inner-div").innerHTML = formattedText; //Помещаем этот текст в блок модального окна
+
+      const element = document.getElementById("inner-div"); //Форматируем ответ
+      element.style.textAlign = "left"; //Выравниваем по по левому краю
+
+      ////
+
+
+    }
+  };
+  xhttp.open("GET", "/getAnswer", true);
+  xhttp.send();
+}
+
+
+// Обработчик кнопки Ответ-Вопрос.
+document.getElementById("answer").addEventListener("click", function() {
+
+  answerRequest();
+
+  sw++; // Увеличиваем значение переменной на 1
+      if (sw === 2) {
+      sw = 0; // Обнуляем переменную, если достигнуто значение 2
+      }
+
+      console.log(sw); // Выводим текущее значение переменной в консоль (для проверки)
+
+      if (sw === 1) {
+        answerRequest();
+        document.getElementById("answer").innerHTML = "<< OK >>";
+      } else {
+        document.getElementById("answer").innerHTML = "<< ОТВЕТ >>";
+        questionRequest();
+      }
+});
+
+<!-- Запрос вопроса на сервер, при нажатии на кнопку Дальше-->
+    document.getElementById("next").addEventListener("click", function() {
+<!--console.log("Запрос отправлен на сервер!")-->
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      console.log(this.responseText)
+
+      document.getElementById("inner-div").innerHTML = this.responseText;
+
+      const element = document.getElementById("inner-div"); //Форматируем вопрос
+      element.style.textAlign = "center"; //Выравниваем по центру
+    }
+  };
+  xhttp.open("GET", "/getQuestion", true);
+  xhttp.send();
+});
+
+<!-- Запрос вопроса на сервер, при нажатии на кнопку Назад-->
+    document.getElementById("prev").addEventListener("click", function() {
+<!--console.log("Запрос отправлен на сервер!")-->
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      console.log(this.responseText)
+      document.getElementById("inner-div").innerHTML = this.responseText;
+
+      const element = document.getElementById("inner-div"); //Форматируем вопрос
+      element.style.textAlign = "center"; //Выравниваем по центру
+    }
+  };
+  xhttp.open("GET", "/getPrevQuestion", true);
+  xhttp.send();
+});
+
+</script>
+
+
+    <div class="footer">© 2023 javanda.ru Проект в разработке..</div>
+</div>
+</body>
+</html>
+
+
+
