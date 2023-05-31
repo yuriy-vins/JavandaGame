@@ -131,6 +131,9 @@
   left: 43%;
   margin: 0 auto; /* автоматически центрирует кнопку по горизонтали */
 }
+#prev:hover, #answer:hover, #next:hover {
+            background-color: darkred;
+        }
 
     </style>
 
@@ -143,6 +146,12 @@
 <audio id="click1" src="kurudum.mp3" preload="auto" autoplay></audio>
 <audio id="click2" src="tududum.mp3" preload="auto" autoplay></audio>
 <audio id="end" src="https://zvukipro.com/uploads/files/2019-03/1551978635_khsm_phone_end.mp3" preload="auto" autoplay></audio>
+
+<!--На три красные кнопки звуки-->
+<audio id="otvet" src="https://zvukipro.com/uploads/files/2022-08/1661165725_lowbatt.mp3" preload="auto" autoplay></audio>
+<audio id="ok" src="https://zvukipro.com/uploads/files/2022-08/1661165734_msgbox.mp3" preload="auto" autoplay></audio>
+<!--<audio id="backnext" src="https://zvukipro.com/uploads/files/2022-08/1661165692_menupop.mp3" preload="auto" autoplay></audio>-->
+<audio id="backnext" src="https://zvukipro.com/uploads/files/2022-08/1661165734_msgbox.mp3" preload="auto" autoplay></audio>
 <!--<audio src="music.mp3" autoplay="autoplay"></audio>-->
 
 <img class="full-screen-image" src="image.jpg">
@@ -153,23 +162,33 @@
 
     <button id="game-button" onclick="game()">ИГРАТЬ</button>
 
-<!--        Модальное окно.-->
+<!--        Модальное окно с кнопками-->
+<!--    <div>-->
+<!--        <div id="question-modal" style="display:none; border:2px solid white; background-color: blue; width: 50%; height: 50%; position: absolute; top: 25%; left: 25%; margin: auto;">-->
+<!--            <div id="inner-div" style="text-align: left; position: relative; padding: 20px;">-->
+<!--                <p style="font-size: 24px; margin: 10px;"></p>-->
+<!--            </div>-->
+
+<!--            <button id="prev" style="display: none; position: absolute; bottom: -80px; left: 0;"><< НАЗАД</button>-->
+<!--            <button id="answer" style="display: none; position: absolute; bottom: -80px; "><< ОТВЕТ >></button>-->
+<!--            <button id="next" style="display: none; position: absolute; bottom: -80px; right: 0;">ДАЛЬШЕ >></button>-->
+<!--        </div>-->
+<!--    </div>-->
+
+    <div>
         <div id="question-modal" style="display:none; border:2px solid white; background-color: blue; width: 50%; height: 50%; position: absolute; top: 25%; left: 25%; margin: auto;">
             <div id="inner-div" style="text-align: left; position: relative; padding: 20px;">
-
-                <p style="font-size: 24px; margin: 10px;">
-
-                </p>
+                <p style="font-size: 24px; margin: 10px;"></p>
             </div>
+            <div>
+                <button id="prev" style="display: none; position: absolute; bottom: -80px; left: 0;"><< НАЗАД</button>
+                <button id="answer" style="position: absolute; bottom: -80px; left: 50%; transform: translateX(-50%);"> << ОТВЕТ >> </button>
+                <button id="next" style="display: none; position: absolute; bottom: -80px; right: 0;">ДАЛЬШЕ >></button>
+            </div>
+
         </div>
-
-
-    <div style="position: relative;">
-        <button id="prev" style="display: none; position: absolute; bottom: -570px; left: 0;"><< НАЗАД</button>
-<!--        <button id="answer" style="display: none; position: absolute; bottom: -550px; left: 50%;"><< ОТВЕТ >></button>-->
-        <button id="answer"><< ОТВЕТ >></button>
-        <button id="next" style="display: none; position: absolute; bottom: -570px; right: 0;">ДАЛЬШЕ >></button>
     </div>
+
 
     <script>
 
@@ -178,12 +197,18 @@
     var click2 = document.getElementById('click2');
     var end = document.getElementById('end');
 
+    var ok = document.getElementById('ok');
+    var otvet = document.getElementById('otvet');
+    var backnext = document.getElementById('backnext');
+
+    let sw=0;
+
 
     //audio.volume = .25;
     function game() {
         end.pause();
         end.currentTime = 0;
-        audio.play();
+        audio.play(); //Включить обратно!!!
 
         var button = document.getElementById("game-button");
         var modal = document.getElementById("question-modal");
@@ -197,6 +222,8 @@
             answerButton.style.display = "block";
             nextButton.style.display = "block";
             button.innerHTML = "СТОП";
+
+            document.getElementById("answer").innerHTML = "<< ОТВЕТ >>";
         } else {
             stopGame();
         }
@@ -219,6 +246,7 @@
         answerButton.style.display = "none";
         nextButton.style.display = "none";
         button.innerHTML = "ИГРАТЬ";
+        sw = 0;
     }
 
         const prevBtn = document.getElementById('prev');
@@ -239,7 +267,7 @@ click2.play();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
       console.log(this.responseText)
-      document.getElementById("inner-div").innerHTML = this.responseText;
+      document.getElementById("inner-div").innerHTML = "ВОПРОС: <br\>"+this.responseText;
 
       const element = document.getElementById("inner-div"); //Форматируем вопрос
       element.style.textAlign = "center"; //Выравниваем по центру
@@ -254,8 +282,6 @@ click2.play();
         questionRequest();
 });
 
-let sw=0;
-
 //Функция Для запроса ответа.
 function answerRequest(){
 click1.play();
@@ -266,17 +292,16 @@ click1.play();
       console.log(this.responseText)
 
       const textFromDatabase = this.responseText; //Получаем текст, чтобы перед вставкой сначала отформатировать его.
-      const formattedText = textFromDatabase.replace(/(\.\s+)([A-ZА-Я])/g, "$1<br/>$2") //Точка, пробел и любая заглавная буква - Затем перенос строки.
-      .replace(/(\-\s+)([A-ZА-Я])/g, "<br/>$1$2") //Тире, пробел и любая заглавная буква - Затем перенос строки.
-      .replace(/([\d() ])/g, "$1\n") //Любая цифра, скобка и пробел - Затем перенос строки. Кажется Не работает.
+
+      const formattedText = textFromDatabase.replace(/(?<=[a-zа-я])(\.\s+)([A-ZА-Я])/g, "$1<br/>$2") //Любая маленькая буква, точка, пробел и любая заглавная буква - Затем перенос строки.
+      .replace(/(?<!^)(\d+\.\s+)/g, "<br/>$1") //Цифра, точка и пробел - Затем перенос строки вместе с ними.
+      .replace(/(\s-\s)([A-ZА-Я])/g, "<br/>$1$2") //Тире, пробел и любая заглавная буква - Затем перенос строки.
       .replace(/\* /g, "<br/>* "); //Звездочка, пробел - Затем перенос строки.
+
       document.getElementById("inner-div").innerHTML = formattedText; //Помещаем этот текст в блок модального окна
 
       const element = document.getElementById("inner-div"); //Форматируем ответ
       element.style.textAlign = "left"; //Выравниваем по по левому краю
-
-      ////
-
 
     }
   };
@@ -292,12 +317,14 @@ document.getElementById("answer").addEventListener("click", function() {
 
   sw++; // Увеличиваем значение переменной на 1
       if (sw === 2) {
+      ok.play();
       sw = 0; // Обнуляем переменную, если достигнуто значение 2
       }
 
       console.log(sw); // Выводим текущее значение переменной в консоль (для проверки)
 
       if (sw === 1) {
+        otvet.play();
         answerRequest();
         document.getElementById("answer").innerHTML = "<< OK >>";
       } else {
@@ -308,6 +335,7 @@ document.getElementById("answer").addEventListener("click", function() {
 
 <!-- Запрос вопроса на сервер, при нажатии на кнопку Дальше-->
     document.getElementById("next").addEventListener("click", function() {
+    backnext.play();
 <!--console.log("Запрос отправлен на сервер!")-->
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
@@ -322,10 +350,14 @@ document.getElementById("answer").addEventListener("click", function() {
   };
   xhttp.open("GET", "/getQuestion", true);
   xhttp.send();
+
+  sw = 0;
+  document.getElementById("answer").innerHTML = "<< ОТВЕТ >>";
 });
 
 <!-- Запрос вопроса на сервер, при нажатии на кнопку Назад-->
     document.getElementById("prev").addEventListener("click", function() {
+    backnext.play();
 <!--console.log("Запрос отправлен на сервер!")-->
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
@@ -339,6 +371,9 @@ document.getElementById("answer").addEventListener("click", function() {
   };
   xhttp.open("GET", "/getPrevQuestion", true);
   xhttp.send();
+
+  sw = 0;
+  document.getElementById("answer").innerHTML = "<< ОТВЕТ >>";
 });
 
 </script>
